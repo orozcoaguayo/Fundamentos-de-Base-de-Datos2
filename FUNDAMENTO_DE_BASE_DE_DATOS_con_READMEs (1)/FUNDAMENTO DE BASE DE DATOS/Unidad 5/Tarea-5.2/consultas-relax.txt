@@ -1,0 +1,160 @@
+==========================================================================
+  consultas-relax.txt  |  Taller automotriz en la calculadora RelaX
+  Sitio: https://dbis-uibk.github.io/relax/
+==========================================================================
+
+PARTE 1. En RelaX abre la pestaña «Group Editor» (Groups -> New group), borra su
+contenido y pega todo lo que aparece entre las líneas de INICIO y FIN del grupo.
+
+----- INICIO DEL GRUPO -----
+group: Taller automotriz
+
+cliente = {
+    id_cliente:number, nombre:string, apellidos:string, correo:string
+    1, 'Juan Carlos', 'Pérez Gómez', 'juan.perez@example.com'
+    2, 'María Fernanda', 'López Ruiz', 'maria.lopez@example.com'
+    3, 'Luis Alberto', 'Hernández Soto', 'luis.hernandez@example.com'
+}
+
+vehiculo = {
+    num_serie:string, placa:string, marca:string, modelo:string, anio:number, kilometraje:number, id_cliente:number
+    '1HGCM82633A004352', 'ABC-123-A', 'Honda', 'Accord', 2018, 85000, 1
+    '3VWFE21C04M000001', 'XYZ-456-B', 'Nissan', 'Versa', 2020, 42000, 2
+    'JT2AE86S3F0123456', 'DEF-789-C', 'Toyota', 'Corolla', 2015, 120000, 3
+}
+
+empleado = {
+    id_empleado:number, nombre:string, fecha_contratacion:string, salario:number, tipo:string
+    1, 'Ana Torres', '2021-03-15', 9500.0, 'RECEPCIONISTA'
+    2, 'Roberto Díaz', '2019-08-01', 14000.0, 'MECANICO'
+    3, 'Carlos Mendoza', '2022-01-10', 13000.0, 'MECANICO'
+    4, 'Laura Ramírez', '2020-06-20', 10500.0, 'ALMACENISTA'
+}
+
+recepcionista = {
+    id_empleado:number, tipo:string, turno:string
+    1, 'RECEPCIONISTA', 'MATUTINO'
+}
+
+mecanico = {
+    id_empleado:number, tipo:string, especialidad:string
+    2, 'MECANICO', 'Motor y transmisión'
+    3, 'MECANICO', 'Frenos y suspensión'
+}
+
+servicio = {
+    id_servicio:number, nombre:string, precio_base:number, duracion_hrs:number
+    1, 'Cambio de aceite y filtro', 350.0, 1.0
+    2, 'Afinación mayor', 1200.0, 3.0
+    3, 'Cambio de balatas', 500.0, 2.0
+}
+
+proveedor = {
+    id_proveedor:number, razon_social:string, telefono:string, correo:string
+    1, 'AutoPartes del Norte S.A. de C.V.', '5553001000', 'ventas@autopartesnorte.example.com'
+    2, 'Lubricantes y Filtros S.A.', '5553002000', 'contacto@lubrifiltros.example.com'
+}
+
+refaccion = {
+    id_refaccion:number, nombre:string, marca:string, precio_unitario:number, existencia:number, id_proveedor:number
+    1, 'Filtro de aceite', 'Fram', 120.0, 40, 2
+    2, 'Aceite 5W-30 (1 litro)', 'Mobil', 95.0, 100, 2
+    3, 'Balatas delanteras', 'Brembo', 650.0, 15, 1
+    4, 'Bujía', 'NGK', 80.0, 60, 1
+}
+
+orden_servicio = {
+    folio:number, fecha_ingreso:string, fecha_entrega:string, estado:string, num_serie:string, id_recepcionista:number
+    1, '2026-10-20', '2026-10-20', 'ENTREGADA', '1HGCM82633A004352', 1
+    2, '2026-10-22', '2026-10-23', 'TERMINADA', '3VWFE21C04M000001', 1
+    3, '2026-10-28', null, 'EN_PROCESO', 'JT2AE86S3F0123456', 1
+}
+
+detalle_servicio = {
+    folio:number, id_servicio:number
+    1, 1
+    2, 2
+    2, 1
+    3, 3
+}
+
+ejecucion = {
+    folio:number, id_servicio:number, id_empleado:number, horas_trabajadas:number
+    1, 1, 2, 1.0
+    2, 2, 2, 3.0
+    2, 1, 3, 1.0
+    3, 3, 3, 2.0
+}
+
+uso_refaccion = {
+    folio:number, id_servicio:number, id_refaccion:number, cantidad:number
+    1, 1, 1, 1
+    1, 1, 2, 4
+    2, 2, 4, 4
+    3, 3, 3, 1
+}
+
+pago = {
+    folio:number, num_pago:number, fecha_pago:string, monto:number, metodo_pago:string
+    1, 1, '2026-10-20', 850.0, 'EFECTIVO'
+    2, 1, '2026-10-22', 1000.0, 'TARJETA'
+    2, 2, '2026-10-23', 870.0, 'TARJETA'
+    3, 1, '2026-10-28', 500.0, 'TRANSFERENCIA'
+}
+
+----- FIN DEL GRUPO -----
+
+PARTE 2. En la pestaña «Relational Algebra», selecciona el grupo «Taller automotriz»
+y ejecuta cada expresión (una por vez). Cada línea corresponde a una consulta del reporte.
+Nota: RelaX permite escribir los operadores con texto (sigma, pi, rho, gamma, natural join,
+natural left outer join, cross join, union, intersect, \ y /). Si alguna línea marca error
+de sintaxis, revisa la ayuda de RelaX y ajusta el operador; la lógica es la misma que en el reporte.
+
+-- Consulta 1: Órdenes en proceso
+sigma estado = 'EN_PROCESO' (orden_servicio)
+
+-- Consulta 2: Datos de contacto de los clientes
+pi nombre, apellidos, correo (cliente)
+
+-- Consulta 3: Vehículos recientes
+pi placa, marca, modelo (sigma anio >= 2018 (vehiculo))
+
+-- Consulta 4: Clientes y sus vehículos
+pi nombre, apellidos, placa (cliente natural join vehiculo)
+
+-- Consulta 5: Servicios de una orden
+pi nombre, precio_base (sigma folio = 2 (detalle_servicio) natural join servicio)
+
+-- Consulta 6: Clientes con vehículos en servicio
+pi nombre, apellidos, placa ((sigma estado = 'EN_PROCESO' (orden_servicio)) natural join vehiculo natural join cliente)
+
+-- Consulta 7: Empleados que ganan más que un recepcionista
+pi e1.nombre, e1.salario (sigma e1.salario > e2.salario and e2.tipo = 'RECEPCIONISTA' ((rho e1 (empleado)) cross join (rho e2 (empleado))))
+
+-- Consulta 8: Correos de clientes y proveedores
+(pi correo (cliente)) union (pi correo (proveedor))
+
+-- Consulta 9: Clientes sin órdenes terminadas
+pi nombre, apellidos (cliente natural join ((pi id_cliente (vehiculo)) \ (pi id_cliente (sigma estado = 'TERMINADA' (orden_servicio) natural join vehiculo))))
+
+-- Consulta 10: Servicios comunes a dos órdenes
+pi nombre (servicio natural join ((pi id_servicio (sigma folio = 1 (detalle_servicio))) intersect (pi id_servicio (sigma folio = 2 (detalle_servicio)))))
+
+-- Consulta 11: Mecánicos que ejecutaron todos los servicios de una orden
+pi nombre (empleado natural join ((pi id_empleado, id_servicio (ejecucion)) / (pi id_servicio (sigma folio = 2 (detalle_servicio)))))
+
+-- Consulta 12: Total pagado por orden
+gamma folio; sum(monto)->total_pagado (pago)
+
+-- Consulta 13: Resumen general de pagos
+gamma ; count(num_pago)->num_pagos, sum(monto)->ingresos_totales, avg(monto)->pago_promedio, max(monto)->pago_maximo (pago)
+
+-- Consulta 14: Empleados y su especialidad (reunión externa)
+pi nombre, tipo, especialidad (empleado natural left outer join mecanico)
+
+-- Consulta 15: Cliente, orden y total pagado de órdenes concluidas
+pi nombre, apellidos, folio, estado, total_pagado (cliente natural join vehiculo natural join (sigma estado = 'TERMINADA' or estado = 'ENTREGADA' (orden_servicio)) natural join (gamma folio; sum(monto)->total_pagado (pago)))
+
+-- Consulta 16: Mecánicos y refacciones de una orden
+pi nombre_mecanico, nombre_refaccion, cantidad (sigma folio = 1 (ejecucion natural join uso_refaccion) natural join (rho nombre_mecanico<-nombre (pi id_empleado, nombre (empleado))) natural join (rho nombre_refaccion<-nombre (pi id_refaccion, nombre (refaccion))))
+
